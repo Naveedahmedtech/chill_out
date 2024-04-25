@@ -1,10 +1,10 @@
-import { Injectable, Logger, Scope } from '@nestjs/common';
+import { Injectable, ConsoleLogger, Scope } from '@nestjs/common';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class MyLogger extends Logger {
+export class MyLogger extends ConsoleLogger {
   constructor(context?: string) {
     // Allow setting context at instantiation
-    super(context); // Pass context to the base Logger constructor
+    super(context); // Pass context to the base ConsoleLogger constructor
   }
 
   // Custom log method
