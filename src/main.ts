@@ -5,16 +5,19 @@ import { setupSecurity } from './utils/app/setupSecurity';
 import { ApiKeyGuard } from './common/guards/api-key.guard';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
+import { ValidationPipe } from '@nestjs/common';
 
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalGuards(new ApiKeyGuard(app.get(ConfigService)));
   const logger = await app.resolve(MyLogger);
-
+  app.useGlobalGuards(new ApiKeyGuard(app.get(ConfigService)));
+  app.useGlobalPipes(new ValidationPipe());
   app.useLogger(logger);
-  await setupSecurity(app);
+
+  setupSecurity(app);
+
   await handleExceptions(app);
   await app.listen(process.env.PORT || 8080);
 }
