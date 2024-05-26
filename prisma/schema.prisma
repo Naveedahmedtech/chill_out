@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id               Int                @id @default(autoincrement())
+  firstName        String?
+  lastName         String?
+  username         String             @unique
+  email            String             @unique
+  password         String
+  emailVerified    Boolean            @default(false)
+  image            String?
+  otp              String?
+  status           String             @default("active")
+  isBlock          Boolean            @default(false)
+  loginAttempts    Int                @default(0)
+  lastLogin        DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  UserVerification UserVerification[]
+  LoginRecord      LoginRecord[]
+
+  @@index([username], name: "username_idx")
+  @@index([email], name: "email_idx")
+}
+
+model UserVerification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "user_verification_userId_idx")
+}
+
+model LoginRecord {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  ipAddress String?
+  device    String?
+  location  String?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "login_record_userId_idx")
+}

@@ -2,15 +2,21 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MyLogger } from './common/logger/logger.service';
 import { setupSecurity } from './utils/app/setupSecurity';
+import { ApiKeyGuard } from './common/guards/api-key.guard';
+import { ConfigService } from '@nestjs/config';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalGuards(new ApiKeyGuard(app.get(ConfigService)));
   const logger = await app.resolve(MyLogger);
 
   app.useLogger(logger);
   await setupSecurity(app);
   await handleExceptions(app);
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 8080);
 }
 
 async function handleExceptions(app) {

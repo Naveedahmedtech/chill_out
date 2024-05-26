@@ -6,15 +6,24 @@ export class AppConfig {
   port: number;
 
   @IsString()
-  database_host: string;
+  DATABASE_URL: string;
 
   @IsNumber()
   @Min(1024)
   database_port: number;
 
-  constructor(port: number, database_host: string, database_port: number) {
+  @IsString()
+  api_key: string;
+
+  constructor(
+    port: number,
+    DATABASE_URL: string,
+    database_port: number,
+    api_key: string,
+  ) {
     this.port = port;
-    this.database_host = database_host;
+    this.DATABASE_URL = DATABASE_URL;
     this.database_port = database_port;
+    this.api_key = api_key;
   }
 }

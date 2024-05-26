@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { validateSync, IsNumber, IsString, Min } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { AppConfig } from './app.config';
 
 export function validate(config: AppConfig): AppConfig {
@@ -7,7 +7,7 @@ export function validate(config: AppConfig): AppConfig {
     enableImplicitConversion: true,
   });
   const errors = validateSync(validatedConfig, {
-    skipMissingProperties: false,
+    skipMissingProperties: false, 
   });
 
   if (errors.length > 0) {
