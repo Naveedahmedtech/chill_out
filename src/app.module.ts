@@ -13,13 +13,17 @@ import { AuthModule } from './auth/auth.module';
 import { UniversalController } from './universal/universal.controller';
 import { UniversalService } from './universal/universal.service';
 import { UniversalModule } from './universal/universal.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([{
-      ttl: 60,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 10,
+      },
+    ]),
+    HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env`,

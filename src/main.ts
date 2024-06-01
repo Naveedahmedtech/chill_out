@@ -15,6 +15,13 @@ async function bootstrap() {
   app.useGlobalGuards(new ApiKeyGuard(app.get(ConfigService)));
   app.useGlobalPipes(new ValidationPipe());
   app.useLogger(logger);
+  // Enable CORS
+  app.enableCors({
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+    allowedHeaders: 'Content-Type, Authorization, XSRF-TOKEN, x-api-key',
+  });
 
   setupSecurity(app);
 

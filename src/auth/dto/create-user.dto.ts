@@ -1,10 +1,20 @@
-// src/auth/dto/create-user.dto.ts
-import { IsString, IsEmail, MinLength, Matches, Validate } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  Matches,
+  IsEmpty,
+} from 'class-validator';
 import { Match } from 'src/utils/common/match.decorator';
 
 export class CreateUserDto {
-  @IsString()
-  readonly username: string;
+  // @IsString()
+  // @IsEmpty()
+  // @Matches(/^[a-zA-Z0-9_]{3,20}$/, {
+  //   message:
+  //     'Username must be 3-20 characters long and can only contain letters, numbers, and underscores',
+  // })
+  // readonly username: string;
 
   @IsEmail()
   readonly email: string;
@@ -12,6 +22,9 @@ export class CreateUserDto {
   @IsString()
   @MinLength(8)
   readonly password: string;
+
+  @IsString()
+  readonly recaptcha: string;
 
   @IsString()
   @MinLength(8)

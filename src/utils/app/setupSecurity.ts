@@ -1,21 +1,35 @@
 import { INestApplication } from '@nestjs/common';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import csurf from 'csurf';
+import crypto from 'crypto';
+import { isValidCsrfToken } from '../common/csrf-utils';
+import { ResponseHandler } from '../common/response-handler';
 
 export function setupSecurity(app: INestApplication) {
   app.use(cookieParser());
 
-  // Conditional CSRF protection
+  // Custom CSRF token generation
   app.use((req, res, next) => {
-    if (req.path.startsWith('/api/')) {
-      csurf({
-        cookie: {
-          key: 'XSRF-TOKEN', 
-          httpOnly: true,
-        },
-      })(req, res, next);
-    } else {
+    if (req.path === '/universal/csrf-token') {
+      next();
+    } else if (
+      req.method === 'POST' ||
+      req.method === 'PUT' ||
+      req.method === 'PATCH' ||
+      req.method === 'DELETE'
+    ) {
+      const token = req.cookies['XSRF-TOKEN'];
+      if (!isValidCsrfToken(token)) {
+        return res
+          .status(403)
+          .json(
+            ResponseHandler.error(
+              'Your session has expired. Please refresh the page and try again.',
+              'Unauthorized',
+              403,
+            ),
+          );
+      }
       next();
     }
   });

@@ -1,17 +1,26 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
+import { UniversalService } from './universal.service';
+import { ResponseHandler } from 'src/utils/common/response-handler';
 
 @Controller('universal')
 export class UniversalController {
+  constructor(private readonly universalService: UniversalService) {}
+
   @Get('csrf-token')
-  getToken(@Res() response: Response) {
-    // Assuming csurf middleware has already added csrfToken to response.locals
-    if (response.locals.csrfToken) {
-      console.log('CSRF Token:', response.locals.csrfToken);
-      response.json({ csrfToken: response.locals.csrfToken });
-    } else {
-      console.log('CSRF Token not found');
-      response.status(500).json({ error: 'CSRF token not found' });
+  async getToken(@Res() response: Response) {
+    try {
+      const csrfToken = await this.universalService.generateAndStoreCsrfToken();
+      response.cookie('XSRF-TOKEN', csrfToken, { httpOnly: true });
+      return response
+        .status(HttpStatus.OK)
+        .json(
+          ResponseHandler.success('CSRF token generated successfully', {
+            csrfToken,
+          }),
+        );
+    } catch (error) {
+      return ResponseHandler.error('Failed to generate CSRF token', error);
     }
   }
 }
